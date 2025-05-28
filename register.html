@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AICT | Registration</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <meta property="og:image" content="https://academics-dce.rf.gd/img/DCE%20logo.jpg" />
+    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href="css/home.css?v=1.01">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js">
+
+    </script>
+
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <img src="img/DCE logo.jpg" alt="Logo" class="logo" aria-label="logo">
+        <ul class="nav-links">
+            <a href="./">Home</a>
+            <a href="./#about">About</a>
+            <a href="./#developer">Contacts</a>
+            <a href="login" class="active">Login <span class="material-symbols-outlined">lock</span></a>
+            <a href="#" id="theme">
+                <span class="material-symbols-outlined">dark_mode</span></a>
+        </ul>
+        <div class="menu-icon">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </nav>
+
+    <div id="loadingOverlay">
+        <div class="loader">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+            <div class="bar4"></div>
+            <div class="bar5"></div>
+            <div class="bar6"></div>
+            <div class="bar7"></div>
+            <div class="bar8"></div>
+            <div class="bar9"></div>
+            <div class="bar10"></div>
+            <div class="bar11"></div>
+            <div class="bar12"></div>
+        </div>
+    </div>
+
+    <div class="form-container" style="max-width: 600px; margin-top:100px;">
+        <h2 class="intro">Create an Account</h2>
+        <form id="reg-form">
+
+            <div class="cluster">
+                <div class="input-group">
+                    <label for="name">Your name:</label>
+                    <input type="text" name="name" id="name" placeholder="Enter your name">
+                </div>
+
+                <div class="input-group">
+                    <label for="reg_no">Registration no.:</label>
+                    <input type="number" name="reg_no" id="reg_no" placeholder="11 digit reg no.">
+                </div>
+            </div>
+
+            <div class="cluster">
+                <div class="input-group">
+                    <label for="semester">Select Semester:</label>
+                    <select id="semester" name="semester">
+                        <option value="" disabled selected> Select semester </option>
+                        <option value="1">1st Semester</option>
+                        <option value="2">2nd Semester</option>
+                        <option value="3">3rd Semester</option>
+                        <option value="4">4th Semester</option>
+                        <option value="5">5th Semester</option>
+                        <option value="6">6th Semester</option>
+                        <option value="7">7th Semester</option>
+                        <option value="8">8th Semester</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="branch">Select Department:</label>
+                    <select id="branch" name="branch">
+                        <option value="" selected hidden> Choose Department </option>
+                        <option value="CSE">CSE</option>
+                        <option value="CYB">CYBER</option>
+                        <option value="EE">EEE</option>
+                        <option value="ME">ME</option>
+                        <option value="CE">Civil</option>
+                        <option value="FTS">FTS</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="cluster">
+                <div class="input-group">
+                    <label for="passing_year">Passing Year</label>
+                    <select id="passing_year" name="passing_year">
+                        <option value="" disabled selected> Select Year </option>
+                        <option value="2025">2025</option>
+                        <option value="2022">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <!-- <option value="2029" disabled>2029</option>
+                        <option value="2030" disabled>2030</option>
+                        <option value="2031" disabled>2031</option> -->
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="phone">Phone:</label>
+                    <input type="text" name="phone" id="phone" placeholder="Enter your phone no.">
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="email">Your email:</label>
+                <input type="email" name="email" id="email" placeholder="valid email">
+                <a href="#" id="sendOtpLink">Send OTP</a>
+            </div>
+
+            <div class="input-group hidden" id="otp-div">
+                <label for="otp">Verify OTP:</label>
+                <input type="text" name="otp" id="otp" placeholder="XXXXXX" minlength="6" maxlength="6" pattern="\d{6}">
+                <a href="#" id="verifyOtp">Verify</a>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" placeholder="Use strong password" disabled>
+                <span id="sendOtpLink2"><i class="fa-solid fa-eye"></i></span>
+            </div>
+
+
+            <div class="terms-container">
+                <input type="checkbox" id="terms" name="terms">
+                <label for="terms">I accept the <a href="tc" target="_blank" class="terms">Terms of use</a></label>
+            </div>
+
+            <button type="submit">Create an account</button>
+        </form>
+
+        <div class="text">
+            <p>Already have an account? <a href="login">Login here</a></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/script.js"></script>
+    <script src="js/navbar.js"></script>
+</body>
+
+</html>

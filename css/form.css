@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "poppins";
+}
+
+body{
+    background: #efefef;
+}
+
+body.dark {
+    background: #1b1b1f;
+}
+
+.form-container {
+    background-color: white;
+    padding: 20px;
+    border-radius:8px 8px 0 0;
+    box-shadow: -3px 3px 5px rgba(0, 0, 0, 0.2);
+    max-width: 450px;
+    width: 100%;
+    margin: 20px auto;
+}
+
+.dark .form-container {
+    background-color: #1b1b1f;
+    color: #fff;
+    box-shadow: -3px 3px 5px rgba(255, 255, 255, 0.4);
+}
+
+.intro {
+    font-size: 22px;
+    margin-bottom: 20px;
+    color: #ff893b;
+    font-weight: 600;
+    text-align: center;
+}
+
+.role-selection {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.role-selection input {
+    margin-right: 2px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.cluster {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.cluster .input-group {
+    width: 48%;
+}
+
+.input-group input,
+select,
+.input-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.dark .input-group input,
+.dark select,
+.dark .input-group textarea {
+    background: #1b1b1f;
+    color: #fff;
+}
+
+
+.input-group textarea{
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 100px;
+}
+
+.input-group #sendOtpLink,
+.input-group #sendOtpLink2,
+.input-group #verifyOtp {
+    position: absolute;
+    top: 40px;
+    cursor: pointer;
+    font-size: 15px;
+    right: 10px;
+    color: rgb(96, 102, 107);
+    text-decoration: none;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #35b3ed;
+    color: white;
+    border: none;
+    font-size: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s all ease-in-out;
+}
+
+
+button:hover {
+    background-color: #2f9ccf;
+}
+
+form .terms,
+form .text a {
+    color: #1f77b6;
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+form .text {
+    margin-top: 10px;
+}
+
+.terms-container {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.terms-container input {
+    margin-right: 5px;
+}
+
+
+
+@media(max-width:700px) {
+    .cluster {
+        flex-direction: column;
+    }
+
+    .cluster .input-group {
+        width: auto;
+    }
+}

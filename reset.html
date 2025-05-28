@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AICTE + DCE | Reset</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="css/form.css">
+    <link rel="stylesheet" href="css/custom.css">
+</head>
+
+<body>
+    <div id="loadingOverlay">
+        <div class="loader">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+            <div class="bar4"></div>
+            <div class="bar5"></div>
+            <div class="bar6"></div>
+            <div class="bar7"></div>
+            <div class="bar8"></div>
+            <div class="bar9"></div>
+            <div class="bar10"></div>
+            <div class="bar11"></div>
+            <div class="bar12"></div>
+        </div>
+    </div>
+
+    <div class="form-container" style="max-width: 400px;">
+        <h2 class="intro">Password Reset</h2>
+        <form id="resetForm">
+            <div id="roleSection">
+                <div class="input-group">
+                    <label for="role">Select Role:</label>
+                    <select name="role" id="role" required>
+                        <option value="" selected disabled>Select Role</option>
+                        <option value="student">Student</option>
+                        <option value="professor">Professor</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <button type="button" id="sendOtpBtn">Send OTP</button>
+            </div>
+
+            <div id="otpSection" style="display: none;">
+                <div class="input-group">
+                    <label for="otp">Enter OTP:</label>
+                    <input type="text" name="otp" id="otp" required>
+                </div>
+                <button type="button" id="verifyOtpBtn">Verify OTP</button>
+            </div>
+
+            <div id="newPasswordSection" style="display:none;">
+                <div class="input-group">
+                    <label for="new_password">New Password:</label>
+                    <input type="password" name="new_password" id="new_password" required>
+                    <span id="sendOtpLink"><i class="fa-solid fa-eye"></i></span>
+                </div>
+                <button type="button" id="resetPasswordBtn">Reset Password</button>
+            </div>
+        </form>
+
+        <div class="error-message" style="color: red; display: none;"></div>
+        <br><a href="login">Back to Login</a>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#sendOtpLink').on('click', function () {
+                let passwordInput = $('#new_password');
+                let passStatus = $(this).find('i');
+
+                if (passwordInput.attr('type') === 'password') {
+                    passwordInput.attr('type', 'text');
+                    passStatus.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    passwordInput.attr('type', 'password');
+                    passStatus.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+            });
+
+            $('#sendOtpBtn').click(function () {
+                const role = $('#role').val();
+                const email = $('#email').val();
+
+                if (!role || !email) {
+                    Swal.fire('Error', 'Please select a role and enter your email.', 'error');
+                    return;
+                }
+
+                $('#loadingOverlay').css('display', 'flex');
+                $.ajax({
+                    type: 'POST',
+                    url: 'endpoint/reset.php',
+                    data: {
+                        action: 'send_otp',
+                        role: role,
+                        email: email
+                    },
+                    success: function (response) {
+                        const data = JSON.parse(response);
+                        $('#loadingOverlay').css('display', 'none');
+                        if (data.success) {
+                            Swal.fire('Success', data.message, 'success');
+                            $('#roleSection').hide();
+                            $('#otpSection').show();
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    }
+                });
+            });
+
+            $('#verifyOtpBtn').click(function () {
+                const otp = $('#otp').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'endpoint/reset.php',
+                    data: {
+                        action: 'verify_otp',
+                        otp: otp
+                    },
+                    success: function (response) {
+                        const data = JSON.parse(response);
+                        if (data.success) {
+                            Swal.fire('Success', data.message, 'success');
+                            $('#otpSection').hide();
+                            $('#newPasswordSection').show();
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    }
+                });
+            });
+
+            $('#resetPasswordBtn').click(function () {
+                const new_password = $('#new_password').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'endpoint/reset.php',
+                    data: {
+                        action: 'reset_password',
+                        new_password: new_password
+                    },
+                    success: function (response) {
+                        const data = JSON.parse(response);
+                        if (data.success) {
+                            Swal.fire('Success', data.message, 'success').then(() => {
+                                window.location.href = 'login'; // Redirect to login page
+                            });
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

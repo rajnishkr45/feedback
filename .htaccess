@@ -1,0 +1,12 @@
+php_value date.timezone Asia/Kolkata
+
+# Enable the Rewrite Engine
+RewriteEngine On
+
+# Rewrite URLs to remove .php extension
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [L]
+
+# Rewrite URLs to remove .html extension
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html [L]
