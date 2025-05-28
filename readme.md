@@ -11,7 +11,7 @@ You can directly copy-paste this into your project’s `README.md` file:
 
 ---
 
-```markdown
+
 # 🎓 Feedback Management System
 
 A complete 360-Degree Feedback and Attendance Management System for academic institutions, designed to help colleges collect feedback and manage faculty evaluation and attendance with ease.
@@ -22,7 +22,6 @@ A complete 360-Degree Feedback and Attendance Management System for academic ins
 
 ## 📁 Project Structure
 
-```
 
 feedback-system/
 │
@@ -60,7 +59,7 @@ feedback-system/
 └── /uploads/
 └── feedback-reports/          # Exported report storage
 
-````
+
 
 ---
 
@@ -100,9 +99,9 @@ feedback-system/
 ### Setup Instructions
 
 1. Clone the repository:
-   ```bash
+
    git clone https://github.com/rajnishkr45/feedback-system.git
-````
+
 
 2. Move the folder to your server root:
 
@@ -164,12 +163,10 @@ This project is licensed under the [MIT License](LICENSE).
 ## 🙋‍♂️ Author
 
 **Rajnish Kumar**
-📧 [youremail@example.com](mailto:rajnishroushan2020@gmail.com)
+📧 [rajnishroushan2020@gmail.com](mailto:rajnishroushan2020@gmail.com)
 🔗 [LinkedIn](https://www.linkedin.com/in/rajnish45/)
 🌐 [Portfolio](https://rajnish45.netlify.app)
 
 > Feel free to fork, customize, and use this system for your college/institutional needs.
-
-
 
 
