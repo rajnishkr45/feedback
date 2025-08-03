@@ -434,7 +434,9 @@ body {
 	align-items: center;
 }
 
-#content main .box-info li:nth-child(1) .bx {
+#content main .box-info li:nth-child(1) .bx,
+#content main .box-info li:nth-child(4) .bx,
+#content main .box-info li:nth-child(7) .bx {
 	background: var(--light-blue);
 	color: var(--blue);
 }
@@ -444,25 +446,19 @@ body {
 	color: var(--yellow);
 }
 
-#content main .box-info li:nth-child(3) .bx {
+#content main .box-info li:nth-child(3) .bx,
+#content main .box-info li:nth-child(6) .bx,
+#content main .box-info li:nth-child(9) .bx {
 	background: var(--light-orange);
 	color: var(--orange);
 }
 
-#content main .box-info li:nth-child(4) .bx {
-	background: var(--light-blue);
-	color: var(--blue);
-}
-
-#content main .box-info li:nth-child(5) .bx {
+#content main .box-info li:nth-child(5) .bx,
+#content main .box-info li:nth-child(8) .bx {
 	background: var(--light-green);
 	color: var(--green);
 }
 
-#content main .box-info li:nth-child(6) .bx {
-	background: var(--light-orange);
-	color: var(--orange);
-}
 
 #content main .box-info li .text h3 {
 	font-size: 24px;

@@ -1,9 +1,9 @@
 <?php
 include 'admin_name.php';
 
-// Fetch the list of professors from the database
+// Fetch professors securely
 $professors = [];
-$query = "SELECT prof_id, name FROM professors";
+$query = "SELECT prof_id, name FROM professors ORDER BY name ASC";
 $result = $conn->query($query);
 
 while ($row = $result->fetch_assoc()) {
@@ -33,9 +33,11 @@ while ($row = $result->fetch_assoc()) {
             <input type="checkbox" id="switch-mode" hidden>
             <label for="switch-mode" class="switch-mode"></label>
             <a href="#" class="notification"><i class='bx bxs-bell'></i><span class="num">9</span></a>
-            <a href="#" class="profile"><img src="../dp/<?php echo $profilePicture ?? 'default.png'; ?>"
-                    alt="Profile Pic"></a>
+            <a href="#" class="profile">
+                <img src="../dp/<?php echo htmlspecialchars($profilePicture ?? 'default.png'); ?>" alt="Profile Pic">
+            </a>
         </nav>
+
         <main>
             <div class="head-title">
                 <div class="left">
@@ -47,17 +49,16 @@ while ($row = $result->fetch_assoc()) {
                 </div>
             </div>
 
-            <br>
-            <div class="form-container" style="max-width: 400px; margin-top:0">
-                <h2 class="intro">Assign institute activity</h2>
-                <form id="assignTaskForm" enctype="multipart/form-data">
+            <div class="form-container" style="max-width: 450px; margin-top:0">
+                <h2 class="intro">Assign Institute Activity</h2>
+                <form id="assignTaskForm">
                     <div class="input-group">
                         <label for="professorSelect">Professor:</label>
-                        <select name="professor_id" id="professorSelect">
+                        <select name="professor_id" id="professorSelect" required>
                             <option value="" disabled selected>Select a Professor</option>
                             <?php foreach ($professors as $professor): ?>
-                                <option value="<?php echo $professor['prof_id']; ?>">
-                                    <?php echo htmlspecialchars($professor['name']); ?>
+                                <option value="<?= intval($professor['prof_id']); ?>">
+                                    <?= htmlspecialchars($professor['name']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -65,7 +66,7 @@ while ($row = $result->fetch_assoc()) {
 
                     <div class="input-group">
                         <label for="roleSelect">Role:</label>
-                        <select name="role" id="roleSelect">
+                        <select name="role" id="roleSelect" required>
                             <option value="" disabled selected>Select a Role</option>
                             <option value="Head of Department">Head of Department</option>
                             <option value="Coordinator">Coordinator</option>
@@ -76,78 +77,62 @@ while ($row = $result->fetch_assoc()) {
                     </div>
 
                     <div class="input-group">
-                        <label for="extra">Extra info:</label>
+                        <label for="extra">Extra Info:</label>
                         <input type="text" name="extra" id="extra" placeholder="Enter extra info">
                     </div>
 
                     <button type="submit">Assign Task</button>
                 </form>
-              
-              <br>  Check institute activity result ?<a href="view_institute_activity.php">Click Here</a>
+
+                <br>Check institute activity result?
+                <a href="view_institute_activity.php"><b>Click Here</b></a>
             </div>
         </main>
     </section>
 
     <script>
         $(document).ready(function () {
-            // Form validation and submission with SweetAlert
+
+            Swal.fire({
+                icon: 'info',
+                title: 'Important!',
+                text: '⚠️ Only 2 Instute activities can be assigned per professor in a session.',
+                confirmButtonText: 'Got it'
+            });
+
+
             $('#assignTaskForm').on('submit', function (event) {
                 event.preventDefault();
 
-                // Get form values
-                const professorId = $('#professorSelect').val();
-                const role = $('#roleSelect').val();
-                const extra = $('#extra').val();
+                let professorId = $('#professorSelect').val();
+                let role = $('#roleSelect').val();
 
-                // Validation checks
-                if (!professorId) {
+                if (!professorId || !role) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',
-                        text: 'Please select a professor.'
+                        title: 'Missing Fields',
+                        text: 'Please select both professor and role.'
                     });
                     return;
                 }
 
-                if (!role) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Please select a role.'
-                    });
-                    return;
-                }
-
-                // Form is valid, proceed with AJAX submission
-                let formData = new FormData(this);
                 $.ajax({
-                    url: 'submit_institute_activity.php',  // Adjust the URL to your script
+                    url: 'submit_institute_activity.php',
                     type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
+                    data: $(this).serialize(), // ✅ Sends form data safely
                     success: function (response) {
                         let res = JSON.parse(response);
-                        if (res.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Task Assigned!',
-                                text: 'Task successfully assigned to the professor.',
-                                showConfirmButton: true,
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Task Assignment Failed',
-                                text: res.message
-                            });
-                        }
+                        Swal.fire({
+                            icon: res.success ? 'success' : 'warning',
+                            title: res.success ? 'Task Assigned!' : 'Warning',
+                            text: res.message
+                        });
                     },
                     error: function () {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'An error occurred while submitting the task. Please try again.'
+                            text: 'Something went wrong. Please try again.'
                         });
                     }
                 });

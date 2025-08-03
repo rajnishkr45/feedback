@@ -9,7 +9,7 @@ if (isset($_SESSION['prof_email'])) {
         $marks = $_POST['marks'];
 
         // Update the marks in the database
-        $stmt = $conn->prepare("UPDATE eventFeedback SET status = ? WHERE feedback_id = ?");
+        $stmt = $conn->prepare("UPDATE eventFeedback SET points = ? WHERE feedback_id = ?");
         $stmt->bind_param("di", $marks, $feedback_id); // 'd' for decimal, 'i' for integer
 
         if ($stmt->execute()) {

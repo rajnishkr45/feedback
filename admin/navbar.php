@@ -21,8 +21,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <span class="text">Assign Class</span>
             </a>
         </li>
-        <li class="<?php echo ($current_page == 'report.php') ? 'active' : ''; ?>">
-            <a href="report">
+        <li class="<?php echo ($current_page == 'admin_acr.php') ? 'active' : ''; ?>">
+            <a href="admin_acr" target="_blank">
                 <i class='bx bxs-doughnut-chart'></i>
                 <span class="text">Analytics</span>
             </a>

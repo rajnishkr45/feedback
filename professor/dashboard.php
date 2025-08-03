@@ -110,11 +110,21 @@ include 'dependencies.php';
                     </span>
                 </li>
                 <li>
-                    <i class='bx bxs-message-check'></i>
-                    <span class="text">
-                        <h3><?php echo $feedCount; ?></h3>
-                        <p>Professor's Feedback</p>
-                    </span>
+                    <i class='bx bxs-calendar'></i>
+                    <a href="att_report">
+                        <span class="text">
+                            <p>Attendance report</p>
+                        </span>
+                    </a>
+                </li>
+               
+                <li>
+                    <i class='bx bxs-calendar-edit'></i>
+                    <a href="view_attendance">
+                        <span class="text">
+                            <p>Manage attendance</p>
+                        </span>
+                    </a>
                 </li>
             </ul>
         </main>
@@ -122,4 +132,5 @@ include 'dependencies.php';
     </section>
     <!-- CONTENT -->
 </body>
+
 </html>

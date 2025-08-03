@@ -71,7 +71,7 @@ include './dependencies.php';
             <div class="table-data">
                 <div class="order">
                     <div class="head">
-                        <h3>View Attendance</h3>
+                        <h3>Subject wise Attendance</h3>
 
                         <form id="search-form">
 
@@ -106,7 +106,7 @@ include './dependencies.php';
                                 <th>Reg No.</th>
                                 <th>Name</th>
                                 <th>Total Class</th>
-                                <th>Present Class</th>
+                                <th>Attended Class</th>
                                 <th>Total %</th>
                             </tr>
                         </thead>

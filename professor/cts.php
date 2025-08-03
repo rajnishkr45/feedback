@@ -1,4 +1,7 @@
 <?php
+
+// Contribution to society page 
+
 include 'pro_name.php';
 $professor_id = $professor['prof_id']; // Assuming you want to store the professor ID.
 ?>
@@ -109,6 +112,14 @@ include 'dependencies.php';
 
     <script>
         $(document).ready(function () {
+            Swal.fire({
+                icon: 'info',
+                title: 'Important!',
+                text: '⚠️ You can upload only 2 activities in this session. Upload your best contributions.',
+                confirmButtonText: 'Got it'
+            });
+
+
             // Toggle custom event name input based on dropdown selection
             $('#eventSelect').on('change', function () {
                 if ($(this).val() === 'other') {

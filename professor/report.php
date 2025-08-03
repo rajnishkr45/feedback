@@ -1,48 +1,49 @@
 <?php
-include 'pro_name.php'; // Fetch professor details
+include 'pro_name.php';
 
-// Fetch the role and department of the logged-in professor
-$query = "SELECT role, dept FROM professors WHERE email = '$professor_email'";
-$result1 = $conn->query($query);
+// Fetch professor role & department
+$stmt = $conn->prepare("SELECT role, dept FROM professors WHERE email = ?");
+$stmt->bind_param("s", $professor_email);
+$stmt->execute();
+$result1 = $stmt->get_result();
 
+$proRole = $proDept = null;
 if ($result1->num_rows > 0) {
     $row1 = $result1->fetch_assoc();
     $proRole = $row1['role'];
     $proDept = $row1['dept'];
-
-    // Fetch feedback based on the role
-    if ($proRole == 'HOD') {
-        // If the professor is HOD, show all feedback for the same department
-        $sql = "SELECT eventFeedback.feedback_id, eventFeedback.event_name, eventFeedback.event_date, 
-                       eventFeedback.role AS event_role, eventFeedback.contribution, eventFeedback.status,eventFeedback.proof_image, eventFeedback.created_at, 
-                       professors.name, professors.dept, professors.role AS professor_role
-                FROM eventFeedback
-                INNER JOIN professors ON eventFeedback.professor_id = professors.prof_id 
-                WHERE professors.dept = '$proDept'";
-    } else {
-        // If not an HOD, show only feedback for the logged-in professor
-        $sql = "SELECT feedback_id, event_name, event_date, eventFeedback.role AS event_role, contribution,proof_image, status, created_at 
-                FROM eventFeedback WHERE professor_id = '$professor_id'";
-    }
-
-    // Execute the query
-    $result = $conn->query($sql);
 }
+
+// Prepare query based on role
+if ($proRole == 'HOD') {
+    $sql = "SELECT e.feedback_id, e.event_name, e.event_date, e.role AS event_role, e.contribution, e.points, e.proof_image, e.created_at,
+                   p.name, p.dept, p.role AS professor_role
+            FROM eventfeedback e
+            INNER JOIN professors p ON e.professor_id = p.prof_id 
+            WHERE p.dept = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $proDept);
+} else {
+    $sql = "SELECT feedback_id, event_name, event_date, e.role AS event_role, e.contribution, e.proof_image, e.points, e.created_at 
+            FROM eventfeedback e 
+            WHERE professor_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $professor_id);
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
-<?php
-include 'dependencies.php';
-?>
+<?php include 'dependencies.php'; ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body>
 
     <!-- SIDEBAR -->
-    <?php
-    include 'navbar.php';
-    ?>
+    <?php include 'navbar.php'; ?>
 
     <!-- CONTENT -->
     <section id="content">
@@ -72,13 +73,9 @@ include 'dependencies.php';
             <div class="head-title">
                 <div class="left">
                     <ul class="breadcrumb">
-                        <li>
-                            <a href="#">Dashboard</a>
-                        </li>
+                        <li><a href="#">Dashboard</a></li>
                         <li><i class='bx bx-chevron-right'></i></li>
-                        <li>
-                            <a class="active" href="#">Analytics</a>
-                        </li>
+                        <li><a class="active" href="#">Contribution to Society</a></li>
                     </ul>
                 </div>
                 <a href="#" class="btn-download">
@@ -92,119 +89,96 @@ include 'dependencies.php';
                     <div class="head">
                         <h3>Contribution to Society</h3>
                     </div>
-                    <?php
-                    // Check if the result set contains any rows
-                    if ($result && $result->num_rows > 0) {
-                        echo "<table class='professor-table' style='font-size:14px'>
-            <thead>
-                <tr>
-                    <th>SN.</th>";
 
-                        // Display 'Prof Name' column only for HODs
-                        if ($proRole == 'HOD') {
-                            echo "<th>Prof Name</th>";
-                        }
-                        echo "<th>Event Name</th>
-                    <th>Event Date</th>
-                    <th>Role</th>
-                    <th>Contribution</th>
-                    <th>Proof</th>";
-                        if ($proRole == 'HOD') {
-                            echo " <th>Points</th>";
-                        }
-                        echo "<th>Submitted on</th>
-                </tr>
-            </thead>
-            <tbody>";
-
-                        // Fetch and display each row of the result set
-                        $serial = 0;
-                        while ($row = $result->fetch_assoc()) {
-                            $serial++;
-                            echo "<tr>
-                             <td>$serial</td>";
-
-                            // Display professor's name only for HODs
-                            if ($proRole == 'HOD') {
-                                echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-                            }
-                            echo "<td>" . htmlspecialchars($row['event_name']) . "</td>
-                        <td>" . htmlspecialchars($row['event_date']) . "</td>
-                        <td>" . htmlspecialchars($row['event_role']) . "</td>
-                        <td>" . htmlspecialchars($row['contribution']) . "</td>";
-                            echo "<td>";
-                            if ($row['proof_image']) {
-                                // Adding download attribute to enable file download
-                                echo "<center><a href='../uploads/" . htmlspecialchars($row['proof_image']) . "' download style='text-decoration:none; font-size:20px; color:#ffc941;'>
-                              <i class='bx bxs-download'></i>
-                            </a></center>";
-                            } else {
-                                echo "No Proof";
-                            }
-                            echo "</td>";
-
-                            // Check if the professor is HOD to allow updating the marks
-                            if ($proRole == 'HOD') {
-                                echo '<td>
-                                <select name="marks" style="padding:3px; outline:none; border-radius:3px; border:1px solid #479ff7;" class="marks-update" data-feedback-id="' . htmlspecialchars($row['feedback_id']) . '">';
-                                // Generate options for marks from 0 to 5 with increments of 0.5
-                                for ($i = 0; $i <= 5; $i += 0.5) {
-                                    echo "<option value='$i'" . ($row['status'] == $i ? ' selected' : '') . ">$i</option>";
-                                }
-
-                                echo '</select></td>';
-                            }
-                            echo "<td>" . htmlspecialchars(date('Y-m-d', strtotime($row['created_at']))) . "</td>
-                </tr>";
-                        }
-                        echo "</tbody></table>";
-                    } else {
+                    <?php if ($result && $result->num_rows > 0) { ?>
+                        <table class="professor-table" style="font-size:14px;">
+                            <thead>
+                                <tr>
+                                    <th>SN.</th>
+                                    <?php if ($proRole == 'HOD') echo "<th>Prof Name</th>"; ?>
+                                    <th>Event Name</th>
+                                    <th>Event Date</th>
+                                    <th>Role</th>
+                                    <th>Contribution</th>
+                                    <th>Proof</th>
+                                    <?php if ($proRole == 'HOD') echo "<th>Points</th>"; ?>
+                                    <th>Submitted on</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php 
+                                $serial = 1;
+                                while ($row = $result->fetch_assoc()) { ?>
+                                    <tr>
+                                        <td><?= $serial++ ?></td>
+                                        <?php if ($proRole == 'HOD') echo "<td>".htmlspecialchars($row['name'])."</td>"; ?>
+                                        <td><?= htmlspecialchars($row['event_name']) ?></td>
+                                        <td><?= htmlspecialchars($row['event_date']) ?></td>
+                                        <td><?= htmlspecialchars($row['event_role']) ?></td>
+                                        <td><?= htmlspecialchars($row['contribution']) ?></td>
+                                        <td>
+                                            <?php if ($row['proof_image']) { ?>
+                                                <center>
+                                                    <a href="../uploads/<?= htmlspecialchars($row['proof_image']) ?>" download style="text-decoration:none; font-size:20px; color:#ffc941;">
+                                                        <i class="bx bxs-download"></i>
+                                                    </a>
+                                                </center>
+                                            <?php } else { echo "No Proof"; } ?>
+                                        </td>
+                                        <?php if ($proRole == 'HOD') { ?>
+                                            <td>
+                                                <select class="marks-update" data-feedback-id="<?= $row['feedback_id'] ?>" style="padding:3px; border-radius:3px; border:1px solid #479ff7;">
+                                                    <?php 
+                                                    for ($i=0; $i<=5; $i+=0.5) {
+                                                        $selected = ($row['points'] == $i) ? "selected" : "";
+                                                        echo "<option value='$i' $selected>$i</option>";
+                                                    }
+                                                    ?>
+                                                </select>
+                                            </td>
+                                        <?php } ?>
+                                        <td><?= date('Y-m-d', strtotime($row['created_at'])) ?></td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    <?php } else {
                         echo "<p>No feedback available at the moment.</p>";
-                    }
-
-                    // Close the database connection
-                    $conn->close();
-                    ?>
+                    } ?>
                 </div>
+            </div>
         </main>
     </section>
-    <!-- AJAX Script -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
         $(document).ready(function () {
-            // Listen for changes in the marks dropdown
-            $('.marks-update').on('change', function () {
-                var feedbackId = $(this).data('feedback-id');
+            $(".marks-update").on("change", function () {
+                var feedbackId = $(this).data("feedback-id");
                 var newMarks = $(this).val();
 
-                // Send the new marks via AJAX
                 $.ajax({
-                    url: 'update_status.php',  // Updated to a new file for marks
-                    type: 'POST',
-                    data: {
-                        feedback_id: feedbackId,
-                        marks: newMarks
-                    },
+                    url: "assign_cts_points.php",
+                    type: "POST",
+                    data: { feedback_id: feedbackId, marks: newMarks },
                     success: function (response) {
-                        var result = JSON.parse(response);
-                        if (result.success) {
-                            Swal.fire({
-                                title: 'Marks Updated',
-                                icon: 'success',
-                                text: 'Marks updated successfully.',
-                            });
-                        } else {
-                            alert('Failed to update marks: ' + result.message);
+                        try {
+                            var result = JSON.parse(response.trim());
+                            if (result.success) {
+                                Swal.fire("✅ Success", "Marks updated successfully!", "success");
+                            } else {
+                                Swal.fire("❌ Error", result.message, "error");
+                            }
+                        } catch (e) {
+                            Swal.fire("⚠️ Error", "Invalid response from server!", "error");
                         }
                     },
-                    error: function (xhr, status, error) {
-                        alert('AJAX error: ' + error);
+                    error: function () {
+                        Swal.fire("❌ Error", "AJAX request failed!", "error");
                     }
                 });
             });
         });
-
     </script>
 </body>
-
 </html>

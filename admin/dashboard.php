@@ -1,54 +1,35 @@
 <?php
-include 'admin_name.php'; // Include your database connection and other necessary files
+include 'admin_name.php'; // DB connection
 
-// Counting professors
-$proSql = "SELECT * FROM professors";
-$proResult = mysqli_query($conn, $proSql);
-$proCount = mysqli_num_rows($proResult) > 0 ? mysqli_num_rows($proResult) : "N/A";
+// ✅ Function to count records efficiently
+function getCount($conn, $table) {
+    $sql = "SELECT COUNT(*) AS total FROM $table";
+    $result = mysqli_query($conn, $sql);
+    if ($result && $row = mysqli_fetch_assoc($result)) {
+        return $row['total'];
+    }
+    return "N/A";
+}
 
-// Counting students
-$stdSql = "SELECT * FROM students";
-$stdResult = mysqli_query($conn, $stdSql);
-$studentCount = mysqli_num_rows($stdResult) > 0 ? mysqli_num_rows($stdResult) : "N/A";
-
-// Counting classes
-$classSql = "SELECT * FROM assigned_class";
-$classResult = mysqli_query($conn, $classSql);
-$classCount = mysqli_num_rows($classResult) > 0 ? mysqli_num_rows($classResult) : "N/A";
-
-// Counting subjects
-$subjSql = "SELECT * FROM subjects";
-$subjResult = mysqli_query($conn, $subjSql);
-$subjCount = mysqli_num_rows($subjResult) > 0 ? mysqli_num_rows($subjResult) : "N/A";
-
-// Counting feedback
-$feedSql = "SELECT * FROM feedback_ratings";
-$feedResult = mysqli_query($conn, $feedSql);
-$feedCount = mysqli_num_rows($feedResult) > 0 ? mysqli_num_rows($feedResult) : "N/A";
-
-// Counting professor feedback
-$proFeedSql = "SELECT * FROM eventFeedback";
-$proFeedResult = mysqli_query($conn, $proFeedSql);
-$proFeedCount = mysqli_num_rows($proFeedResult) > 0 ? mysqli_num_rows($proFeedResult) : "N/A";
+// ✅ Getting all counts
+$proCount       = getCount($conn, "professors");
+$studentCount   = getCount($conn, "students");
+$classCount     = getCount($conn, "assigned_class");
+$subjCount      = getCount($conn, "subjects");
+$feedCount      = getCount($conn, "feedback_ratings");
+$proFeedCount   = getCount($conn, "eventFeedback");
+$deptCount      = getCount($conn, "departmental_activities");
+$instCount      = getCount($conn, "institute_activity");
+$sessCount      = getCount($conn, "sessions");
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
-<?php
-include './dependencies.php';
-?>
+<?php include './dependencies.php'; ?>
 
 <body>
-    <!-- SIDEBAR -->
-    <?php
-    include 'navbar.php';
-    ?>
-    <!-- SIDEBAR -->
+    <?php include 'navbar.php'; ?>
 
-    <!-- CONTENT -->
     <section id="content">
-        <!-- NAVBAR -->
         <nav>
             <i class='bx bx-menu'></i>
             <form action="#">
@@ -67,21 +48,15 @@ include './dependencies.php';
                 <img src="../dp/<?php echo $profilePicture ?? 'default.png'; ?>">
             </a>
         </nav>
-        <!-- NAVBAR -->
 
-        <!-- MAIN -->
         <main>
             <div class="head-title">
                 <div class="left">
                     <h1>Dashboard</h1>
                     <ul class="breadcrumb">
-                        <li>
-                            <a href="#">Dashboard</a>
-                        </li>
+                        <li><a href="#">Dashboard</a></li>
                         <li><i class='bx bx-chevron-right'></i></li>
-                        <li>
-                            <a class="active" href="#">Home</a>
-                        </li>
+                        <li><a class="active" href="#">Home</a></li>
                     </ul>
                 </div>
                 <a href="./verify_student" class="btn-download">
@@ -94,71 +69,55 @@ include './dependencies.php';
                 <li>
                     <i class='bx bxs-user-voice'></i>
                     <a href="manage_pro">
-                        <span class="text">
-                            <h3><?php echo $proCount; ?></h3>
-                            <p>Manage Prof.</p>
-                        </span></a>
+                        <span class="text"><h3><?= $proCount ?></h3><p>Manage Prof.</p></span>
+                    </a>
                 </li>
                 <li>
                     <i class='bx bxs-group'></i>
                     <a href="manage_std">
-                        <span class="text">
-                            <h3><?php echo $studentCount; ?></h3>
-                            <p>Manage Students</p>
-                        </span></a>
+                        <span class="text"><h3><?= $studentCount ?></h3><p>Manage Students</p></span>
+                    </a>
                 </li>
-
                 <li>
                     <i class='bx bxs-book-add'></i>
                     <a href="manage_subject">
-                        <span class="text">
-                            <h3><?php echo $subjCount; ?></h3>
-                            <p>Manages subject</p>
-                        </span>
+                        <span class="text"><h3><?= $subjCount ?></h3><p>Manage Subjects</p></span>
                     </a>
                 </li>
                 <li>
                     <i class='bx bx-chalkboard'></i>
                     <a href="manage_class">
-                        <span class="text">
-                            <h3><?php echo $classCount; ?></h3>
-                            <p>Manage Classes</p>
-                        </span>
+                        <span class="text"><h3><?= $classCount ?></h3><p>Manage Classes</p></span>
                     </a>
                 </li>
                 <li>
                     <i class='bx bxs-message-dots'></i>
-                    <span class="text">
-                        <h3>
-                            <?php
-                            // Make sure $feedCount is an integer
-                            $feedCount = (int) $feedCount; // Ensure it's an integer
-                            
-                            if ($feedCount > 0) {
-                                echo $feedCount; // Division if greater than 0
-                            } else {
-                                echo "N/A"; // Display "N/A" if $feedCount is 0
-                            }
-                            ?>
-                        </h3>
-                        <p>Student's Feedback</p>
-                    </span>
+                    <span class="text"><h3><?= $feedCount ?: "N/A" ?></h3><p>Student's Feedback</p></span>
                 </li>
-
                 <li>
                     <i class='bx bxs-message-check'></i>
-                    <span class="text">
-                        <h3><?php echo $proFeedCount; ?></h3>
-                        <p>Professor's Feedback</p>
-                    </span>
+                    <span class="text"><h3><?= $proFeedCount ?></h3><p>Contribution to society</p></span>
                 </li>
-
+                <li>
+                    <i class='bx bxs-school'></i>
+                    <a href="departmental_activity">
+                        <span class="text"><h3><?= $deptCount ?></h3><p>Manage Departmental</p></span>
+                    </a>
+                </li>
+                <li>
+                    <i class='bx bxs-institution'></i>
+                    <a href="institute_activity">
+                        <span class="text"><h3><?= $instCount ?></h3><p>Manage Institutional</p></span>
+                    </a>
+                </li>
+                <li>
+                    <i class='bx bxs-calendar'></i>
+                    <a href="manage_sessions" target="_blank">
+                        <span class="text"><h3><?= $sessCount ?></h3><p>Manage Session</p></span>
+                    </a>
+                </li>
             </ul>
         </main>
-        <!-- MAIN -->
     </section>
-    <!-- CONTENT -->
-
 </body>
-
 </html>

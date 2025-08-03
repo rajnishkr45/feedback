@@ -19,22 +19,21 @@ include './dependencies.php';
             font-family: Arial, Helvetica, sans-serif;
         }
 
-        #submit-attendance {
+        #view-report-btn {
             background-color: #4CAF50;
             color: #fff;
             border-radius: 5px;
-            margin: 15px auto 5px;
-            width: 200px;
+            margin: 5px;
+            max-width: 150px;
             outline: none;
             border: none;
-            padding: 10px;
+            padding: 7px 10px;
             cursor: pointer;
-            font-size: 18px;
-            display: block;
+            font-size: 16px;
             transition: all 0.3s ease-in-out;
         }
 
-        #submit-attendance:hover {
+        #view-report-btn {
             background-color: #3e8e41;
         }
     </style>
@@ -71,9 +70,9 @@ include './dependencies.php';
             <div class="table-data">
                 <div class="order">
                     <div class="head">
-                        <h3>view Attendance</h3>
+                        <h3>Complete Attendance Report</h3>
 
-                        <form id="attendance-report-filters">
+                        <form id="search-form">
                             <select id="report-semester" required>
                                 <option value="" disabled selected>Select Semester</option>
                                 <?php for ($i = 1; $i <= 8; $i++) {

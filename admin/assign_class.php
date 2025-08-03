@@ -102,7 +102,7 @@ include './dependencies.php';
                         <button type="submit">Assign Class</button>
                     </form>
                     <br>
-                    View <a href="total_class.php">Assigned classes</a>
+                    View <a href="manage_class">Assigned classes</a>
                 </div>
             </main>
         </section>

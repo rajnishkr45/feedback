@@ -8,9 +8,11 @@ if (!isset($conn) || !$conn) {
     exit();
 }
 
-$sql = "SELECT id, name, email, branch, phone, reg_no, semester FROM students WHERE 1=1";
+// ✅ Initialize before conditions to avoid warnings
 $params = [];
 $types = "";
+
+$sql = "SELECT id, name, email, branch, phone, reg_no, semester FROM students WHERE 1=1";
 
 if ($semester !== '') {
     $sql .= " AND semester = ?";
@@ -18,8 +20,16 @@ if ($semester !== '') {
     $types .= "i"; 
 }
 
+// ✅ Add descending order by reg_no
+$sql .= " ORDER BY branch ASC";
+
 $stmt = $conn->prepare($sql);
-if (!empty($params)) $stmt->bind_param($types, ...$params);
+
+// ✅ Bind parameters only if present
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
+
 $stmt->execute();
 $result = $stmt->get_result();
 
