@@ -182,7 +182,6 @@ include './dependencies.php';
                             </select>
                         </form>
                     </div>
-                    
                     <table class="professor-table">
                         <thead>
                             <tr>
@@ -191,7 +190,7 @@ include './dependencies.php';
                                 <th>Reg No.</th>
                                 <th>Sem</th>
                                 <th>Dept</th>
-                                <th>Phone</th>
+                                <!-- <th>Phone</th> -->
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -229,7 +228,6 @@ include './dependencies.php';
                                 <option value="6">6th Semester</option>
                                 <option value="7">7th Semester</option>
                                 <option value="8">8th Semester</option>
-                                <option value="9">Pass Out</option>
                             </select>
                         </div>
                         <div class="input-group">
@@ -293,7 +291,7 @@ include './dependencies.php';
                                 <td style='text-align:center;'><span class='prof-semester'>${student.semester}</span></td>
                                 <td style="display:none;"><span class='prof-email'>${student.email}</span></td>
                                 <td style='text-align:center;'><span class='prof-dept'>${student.branch}</span></td>
-                                <td style='text-align:center;'><span class='prof-phone'>${student.phone}</span></td>
+                                <td style='text-align:center; display:none;'><span class='prof-phone'>${student.phone}</span></td>
                                 <td style='text-align:center;'>
                                     <span class='edit-btn' data-id='${student.id}'><i class='bx bxs-edit'></i></span>
                                     <span class='delete-btn' data-prof-id='${student.id}'><i class='bx bxs-trash'></i></span>
@@ -376,6 +374,7 @@ include './dependencies.php';
                     }
                 });
             });
+
         });
     </script>
 </body>

@@ -84,40 +84,47 @@ include './dependencies.php';
                         </li>
                     </ul>
                 </div>
-                <a href="#" class="btn-download">
-                    <i class='bx bxs-cloud-download'></i>
-                    <span class="text">Download PDF</span>
+                <a href="./verify_student" class="btn-download">
+                    <i class='bx bx-search-alt-2'></i>
+                    <span class="text">Check Status</span>
                 </a>
             </div>
 
             <ul class="box-info">
                 <li>
                     <i class='bx bxs-user-voice'></i>
-                    <span class="text">
-                        <h3><?php echo $proCount; ?></h3>
-                        <p>Professors</p>
-                    </span>
+                    <a href="manage_pro">
+                        <span class="text">
+                            <h3><?php echo $proCount; ?></h3>
+                            <p>Manage Prof.</p>
+                        </span></a>
                 </li>
                 <li>
                     <i class='bx bxs-group'></i>
-                    <span class="text">
-                        <h3><?php echo $studentCount; ?></h3>
-                        <p>Students</p>
-                    </span>
+                    <a href="manage_std">
+                        <span class="text">
+                            <h3><?php echo $studentCount; ?></h3>
+                            <p>Manage Students</p>
+                        </span></a>
                 </li>
+
                 <li>
-                    <i class='bx bxs-book'></i>
-                    <span class="text">
-                        <h3><?php echo $subjCount; ?></h3>
-                        <p>Total Subjects</p>
-                    </span>
+                    <i class='bx bxs-book-add'></i>
+                    <a href="manage_subject">
+                        <span class="text">
+                            <h3><?php echo $subjCount; ?></h3>
+                            <p>Manages subject</p>
+                        </span>
+                    </a>
                 </li>
                 <li>
                     <i class='bx bx-chalkboard'></i>
-                    <span class="text">
-                        <h3><?php echo $classCount; ?></h3>
-                        <p>Total Classes</p>
-                    </span>
+                    <a href="manage_class">
+                        <span class="text">
+                            <h3><?php echo $classCount; ?></h3>
+                            <p>Manage Classes</p>
+                        </span>
+                    </a>
                 </li>
                 <li>
                     <i class='bx bxs-message-dots'></i>
@@ -128,7 +135,7 @@ include './dependencies.php';
                             $feedCount = (int) $feedCount; // Ensure it's an integer
                             
                             if ($feedCount > 0) {
-                                echo $feedCount / 10; // Division if greater than 0
+                                echo $feedCount; // Division if greater than 0
                             } else {
                                 echo "N/A"; // Display "N/A" if $feedCount is 0
                             }
@@ -137,6 +144,7 @@ include './dependencies.php';
                         <p>Student's Feedback</p>
                     </span>
                 </li>
+
                 <li>
                     <i class='bx bxs-message-check'></i>
                     <span class="text">
@@ -144,6 +152,7 @@ include './dependencies.php';
                         <p>Professor's Feedback</p>
                     </span>
                 </li>
+
             </ul>
         </main>
         <!-- MAIN -->

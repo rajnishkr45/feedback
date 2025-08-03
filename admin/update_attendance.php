@@ -1,5 +1,5 @@
 <?php
-// update_attendance.php
+// update_attendance.php backend
 
 // Include the database connection
 include '../endpoint/config.php';
