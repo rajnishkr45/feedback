@@ -63,9 +63,6 @@ include 'pro_name.php';
 
                     <button type="submit">Submit Activity</button>
                 </form>
-
-                <br>
-                <a href="view_departmental_activity.php">📄 View Submitted Activities</a>
             </div>
         </main>
     </section>

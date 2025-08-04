@@ -21,8 +21,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <span class="text">Feedback</span>
             </a>
         </li>
-        <li class="<?php echo ($current_page == 'report.php') ? 'active' : ''; ?>">
-            <a href="report">
+        <li class="<?php echo ($current_page == 'manage_contributions.php') ? 'active' : ''; ?>">
+            <a href="manage_contributions">
                 <i class='bx bxs-doughnut-chart'></i>
                 <span class="text">Analytics</span>
             </a>

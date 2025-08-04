@@ -104,10 +104,12 @@ include 'dependencies.php';
                 </li>
                 <li>
                     <i class='bx bx-chalkboard'></i>
-                    <span class="text">
-                        <h3><?php echo $classCount; ?></h3>
-                        <p>Assigned Classes</p>
-                    </span>
+                    <a href="assigned_classes">
+                        <span class="text">
+                            <h3><?php echo $classCount; ?></h3>
+                            <p>Your Classes</p>
+                        </span>
+                    </a>
                 </li>
                 <li>
                     <i class='bx bxs-calendar'></i>
@@ -117,12 +119,21 @@ include 'dependencies.php';
                         </span>
                     </a>
                 </li>
-               
+
                 <li>
                     <i class='bx bxs-calendar-edit'></i>
                     <a href="view_attendance">
                         <span class="text">
                             <p>Manage attendance</p>
+                        </span>
+                    </a>
+                </li>
+              
+                <li>
+                    <i class='bx bx-file'></i>
+                    <a href="report">
+                        <span class="text">
+                            <p>Manage CTS</p>
                         </span>
                     </a>
                 </li>
