@@ -1,6 +1,6 @@
 <?php
-require_once "../endpoint/config.php"; // Database connection
 
+include 'admin_name.php';
 $message = "";
 
 // DELETE SUBJECT

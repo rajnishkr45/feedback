@@ -1,16 +1,12 @@
 <?php
-session_start();
-if (!isset($_SESSION['email'])) {
-    header('Location: ../login');
-    exit;
-}
 
-include '../endpoint/config.php';
-include '../academic_session_helper.php'; // ✅ Added helper file
+include 'std_name.php';
+include '../endpoint/academic_session.php';
 
+header('Content-Type: application/json');
 $response = ['success' => false, 'message' => ''];
 
-// ✅ Fetch current active session
+// Get active academic session
 $activeSession = getActiveSession($conn);
 if (!$activeSession) {
     echo json_encode([
@@ -21,60 +17,78 @@ if (!$activeSession) {
 }
 $session_id = $activeSession['session_id'];
 
+// Get student details
 $student_email = $_SESSION['email'];
-$student_data = $conn->query("SELECT id, passing_year, semester FROM students WHERE email = '$student_email'")->fetch_assoc();
+$student_query = $conn->prepare("SELECT id, semester, passing_year FROM students WHERE email = ?");
+$student_query->bind_param("s", $student_email);
+$student_query->execute();
+$student_result = $student_query->get_result();
 
-if ($student_data) {
-    $student_id = $student_data['id'];
-    $student_semester = $student_data['semester'];
-    $passing_year = $student_data['passing_year'];
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $input_data = json_decode(file_get_contents("php://input"), true);
-
-        if (!empty($input_data['professor_id']) && !empty($input_data['semester']) && !empty($input_data['subject']) && !empty($input_data['ratings'])) {
-            $professor_id = $input_data['professor_id'];
-            $semester = $input_data['semester'];
-            $subject = $input_data['subject'];
-            $ratings = json_encode($input_data['ratings']); 
-
-            // ✅ Check if feedback already exists for SAME SESSION + SAME SEMESTER
-            $check_stmt = $conn->prepare("SELECT COUNT(*) FROM feedback_ratings 
-                                          WHERE student_id = ? 
-                                          AND professor_id = ? 
-                                          AND semester = ? 
-                                          AND subject_id = ? 
-                                          AND session_id = ?");
-            $check_stmt->bind_param('iiiii', $student_id, $professor_id, $semester, $subject, $session_id);
-            $check_stmt->execute();
-            $check_stmt->bind_result($count);
-            $check_stmt->fetch();
-            $check_stmt->close();
-
-            if ($count > 0) {
-                $response['message'] = "⚠️ You have already given feedback for this professor in this semester for this session.";
-            } else {
-                // ✅ Insert feedback with session_id
-                $stmt = $conn->prepare("INSERT INTO feedback_ratings 
-                    (student_id, professor_id, semester, passing_year, subject_id, ratings, session_id) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param('iiiissi', $student_id, $professor_id, $semester, $passing_year, $subject, $ratings, $session_id);
-
-                if ($stmt->execute()) {
-                    $response['success'] = true;
-                    $response['message'] = '✅ Your feedback has been submitted successfully.';
-                } else {
-                    $response['message'] = '❌ Error submitting feedback.';
-                }
-                $stmt->close();
-            }
-        } else {
-            $response['message'] = "⚠️ All required fields are missing.";
-        }
-    }
-} else {
-    $response['message'] = "❌ Student not found.";
+if ($student_result->num_rows === 0) {
+    echo json_encode(['success' => false, 'message' => '❌ Student not found.']);
+    exit;
 }
 
-echo json_encode($response);
+$student = $student_result->fetch_assoc();
+$student_id = (int)$student['id'];
+$student_semester = (int)$student['semester'];
+$passing_year = $student['passing_year'];
+
+// Handle POST request
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    if (
+        empty($input['professor_id']) ||
+        empty($input['semester']) ||
+        empty($input['subject']) ||
+        empty($input['ratings']) ||
+        !is_array($input['ratings'])
+    ) {
+        echo json_encode(['success' => false, 'message' => '⚠️ Please fill all required fields.']);
+        exit;
+    }
+
+    $professor_id = (int)$input['professor_id'];
+    $semester = (int)$input['semester'];
+    $subject_id = (int)$input['subject'];
+    $ratings = $input['ratings'];
+
+    // Validate each rating
+    foreach ($ratings as $question_id => $value) {
+        if (!is_numeric($question_id) || !is_numeric($value) || $value < 1 || $value > 10) {
+            echo json_encode(['success' => false, 'message' => '❌ Invalid rating values detected.']);
+            exit;
+        }
+    }
+
+    $ratings_json = json_encode($ratings);
+
+    // Check for duplicate submission
+    $check = $conn->prepare("SELECT COUNT(*) FROM feedback_ratings WHERE student_id = ? AND professor_id = ? AND semester = ? AND subject_id = ? AND session_id = ?");
+    $check->bind_param("iiiii", $student_id, $professor_id, $semester, $subject_id, $session_id);
+    $check->execute();
+    $check->bind_result($exists);
+    $check->fetch();
+    $check->close();
+
+    if ($exists > 0) {
+        echo json_encode(['success' => false, 'message' => '⚠️ Feedback already submitted for this professor and subject.']);
+        exit;
+    }
+
+    // ✅ Insert feedback
+    $insert = $conn->prepare("INSERT INTO feedback_ratings (student_id, professor_id, semester, passing_year, subject_id, ratings, session_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $insert->bind_param("iiisisi", $student_id, $professor_id, $semester, $passing_year, $subject_id, $ratings_json, $session_id);
+
+    if ($insert->execute()) {
+        echo json_encode(['success' => true, 'message' => '✅ Feedback submitted successfully!']);
+    } else {
+        echo json_encode(['success' => false, 'message' => '❌ Failed to submit feedback. Please try again.']);
+    }
+
+    $insert->close();
+} else {
+    echo json_encode(['success' => false, 'message' => '❌ Invalid request method.']);
+}
 ?>

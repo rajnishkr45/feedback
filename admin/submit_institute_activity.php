@@ -1,5 +1,5 @@
 <?php
-include '../endpoint/config.php';
+include 'admin_name.php';
 include '../endpoint/academic_session.php'; // ✅ Get $current_session_id
 
 

@@ -47,17 +47,23 @@ include './dependencies.php';
 <style>
     .card-container {
         display: flex;
-        gap: 30px;
+        gap: 40px;
         flex-wrap: wrap;
         justify-content: center;
     }
 
     .attendance-card {
         width: 250px;
+        background: #fff;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         padding: 20px;
         text-align: center;
+    }
+
+    .attendance-card h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
     }
 
     .chart-container {
@@ -79,11 +85,21 @@ include './dependencies.php';
         margin: 5px 0;
     }
 
+    .subject-name {
+        font-weight: 600;
+        font-size: 16px;
+        color: #444;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background-color: #f0f0f0;
+        display: inline-block;
+    }
 
     .subject-name {
         font-weight: bold;
     }
 </style>
+
 
 <body>
     <!-- SIDEBAR -->
@@ -121,7 +137,7 @@ include './dependencies.php';
                 <?php
                 // Loop through attendance data
                 foreach ($attendanceData as $data):
-                    $percentage = round(($data['attended_classes'] / $data['total_classes']),4 )* 100;
+                    $percentage = round(($data['attended_classes'] / $data['total_classes']), 4) * 100;
                     $subject_name = $subjects[$data['subject_id']] ?? 'Unknown Subject';
                     ?>
                     <div class="attendance-card">
@@ -143,13 +159,13 @@ include './dependencies.php';
             <!-- Overall Attendance -->
             <div class="card-container">
                 <div class="attendance-card">
-                    <h3>Overall Attendance</h3>
                     <div class="chart-container">
                         <canvas id="overall-chart"></canvas>
-                        <h3><?php echo round(($totalAttended / $totalClasses),4) * 100; ?>%</h3>
+                        <h3><?php echo round(($totalAttended / $totalClasses), 4) * 100; ?>%</h3>
                         <p><?php echo $totalAttended; ?> / <?php echo $totalClasses; ?></p>
 
                     </div>
+                    <h3 class="subject-name" style="margin-top:10px;">Overall Attendance</h3>
                 </div>
             </div>
 
@@ -253,4 +269,5 @@ include './dependencies.php';
         });
     </script>
 </body>
+
 </html>

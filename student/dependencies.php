@@ -4,5 +4,5 @@
     <title>DCE + AICTE | Student Dashboard</title>
     <script src="../js/jscript.js?v=1" defer></script>
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="../css/style.css?v=1">
+    <link rel="stylesheet" href="../css/style.css?v=2">
 </head>

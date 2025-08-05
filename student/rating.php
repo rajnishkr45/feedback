@@ -1,16 +1,13 @@
 <?php
 include 'std_name.php';
 
-// Fetch student's semester and branch based on their session email
 $student_email = $_SESSION['email'];
 $student_data = $conn->query("SELECT semester, branch FROM students WHERE email = '$student_email'")->fetch_assoc();
 $student_semester = $student_data['semester'];
 $student_branch = $student_data['branch'];
 
-// Fetch questions for rating
 $questions = $conn->query("SELECT question_id, question_text FROM feedback_questions");
 
-// Fetch subjects based on student's semester and branch
 $subjects = $conn->query("SELECT subject_id, subject_name FROM subjects WHERE semester = '$student_semester' AND branch = '$student_branch'");
 
 $subject_options = '';
@@ -24,226 +21,206 @@ while ($row = $subjects->fetch_assoc()) {
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AICTE | Dashboard</title>
+    <title>Professor Feedback</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script src="../js/jscript.js?v=1.1" defer></script>
-    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/form.css?v=1.2">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- SweetAlert -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Custom Style -->
+    <style>
+        body {
+            background: #f1f4f9;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .card {
+            border-radius: 15px;
+        }
+
+        .card-header {
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .star-rating .fa-star {
+            font-size: 1.6rem;
+            color: #ccc;
+            margin-right: 6px;
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+
+        .star-rating .fa-star.checked {
+            color: #ffc107;
+            transform: scale(1.2);
+        }
+
+        .question-box {
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .btn-success {
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 10px;
+        }
+    </style>
 </head>
 
 <body>
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-10">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h4 class="mb-0">Professor Feedback Form</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="ratingForm">
+                            <div class="mb-3">
+                                <label class="form-label">Semester</label>
+                                <input type="text" class="form-control" value="<?= $student_semester; ?>" disabled>
+                            </div>
 
-    <!-- SIDEBAR -->
-    <?php
-    include 'navbar.php';
-    ?>
+                            <div class="mb-3">
+                                <label class="form-label">Subject</label>
+                                <select class="form-select" name="subject" id="subject">
+                                    <option value="">-- Select Subject --</option>
+                                    <?= $subject_options; ?>
+                                </select>
+                            </div>
 
-    <!-- CONTENT -->
-    <section id="content">
-        <!-- NAVBAR -->
-        <nav>
-            <i class='bx bx-menu'></i>
-            <form action="#">
-                <div class="form-input">
-                    <input type="search" placeholder="Search...">
-                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                            <div class="mb-3">
+                                <label class="form-label">Professor</label>
+                                <select class="form-select" name="professor_id" id="professor">
+                                    <option value="">-- Select Professor --</option>
+                                </select>
+                            </div>
+
+                            <?php if ($questions->num_rows > 0): ?>
+                                <h5 class="text-secondary mb-3">Rate the following (1 to 10 stars)</h5>
+                                <?php while ($q = $questions->fetch_assoc()): ?>
+                                    <div class="question-box">
+                                        <label class="form-label"><?= $q['question_text']; ?></label>
+                                        <div class="star-rating" data-question-id="<?= $q['question_id']; ?>">
+                                            <?php for ($i = 1; $i <= 10; $i++): ?>
+                                                <i class="fa fa-star" data-value="<?= $i; ?>"></i>
+                                            <?php endfor; ?>
+                                        </div>
+                                    </div>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <div class="alert alert-warning">No questions available for feedback.</div>
+                            <?php endif; ?>
+
+                            <button type="submit" class="btn btn-success w-100 mt-3">Submit Feedback</button>
+                        </form>
+                    </div>
                 </div>
-            </form>
-            <input type="checkbox" id="switch-mode" hidden>
-            <label for="switch-mode" class="switch-mode"></label>
-            <a href="#" class="notification">
-                <i class='bx bxs-bell'></i>
-                <span class="num">9</span>
-            </a>
-            <a href="#" class="profile">
-                <img src="../dp/<?php echo $profilePicture ?? 'default.png'; ?>">
-            </a>
-        </nav>
-        <!-- NAVBAR -->
-
-        <!-- MAIN -->
-        <main>
-            <div class="head-title">
-                <div class="left">
-                    <ul class="breadcrumb">
-                        <li>
-                            <a href="#">Dashboard</a>
-                        </li>
-                        <li><i class='bx bx-chevron-right'></i></li>
-                        <li>
-                            <a class="active" href="#">Feedback</a>
-                        </li>
-                    </ul>
-                </div>
-                <a href="#" class="btn-download">
-                    <i class='bx bxs-cloud-download'></i>
-                    <span class="text">Download PDF</span>
-                </a>
             </div>
+        </div>
+    </div>
 
-            <div class="form-container" style="max-width:750px; min-width: 350px;">
-                <h2 clas="intro">Rate Professor</h2>
-                <form id="ratingForm">
-                    <div class="input-group">
-                        <label for="semester">Select Semester:</label>
-                        <select name="semester" id="semester">
-                            <option value="<?= $student_semester; ?>" selected><?= $student_semester; ?></option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="subject">Select Subject:</label>
-                        <select name="subject" id="subject">
-                            <option value="">--Select Subject--</option>
-                            <?= $subject_options; ?>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="professor">Select Professor:</label>
-                        <select name="professor_id" id="professor">
-                            <option value="">--Select Professor--</option>
-                        </select>
-                    </div>
-
-                    <div id="questions">
-                        <?php if ($questions->num_rows > 0): ?>
-                            <h3 style="font-weight:600; font-size:18px ; color:#ff8843; margin:5px auto;">Rate the following
-                                questions (1-10):
-                            </h3>
-                            <?php while ($row = $questions->fetch_assoc()): ?>
-                                <div class="input-group">
-                                    <label for="question_<?php echo $row['question_id']; ?>">
-                                        <?php echo $row['question_text']; ?>
-                                    </label>
-                                    <select name="rating[<?php echo $row['question_id']; ?>]"
-                                        id="question_<?php echo $row['question_id']; ?>">
-                                        <option value="">--Select Rating--</option>
-                                        <?php for ($i = 1; $i <= 10; $i++): ?>
-                                            <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                                        <?php endfor; ?>
-                                    </select>
-                                </div>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <p>No questions available for rating.</p>
-                        <?php endif; ?>
-                    </div>
-
-                    <button type="submit">Submit Rating</button>
-                </form>
-            </div>
-        </main>
-        <!-- MAIN -->
-    </section>
-    <!-- CONTENT -->
-
-
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
-            // Fetch professors based on the student's semester and branch
-            $('#subject').change(function () {
-                let selectedSubject = $(this).val();
-                let semester = "<?= $student_semester; ?>"; // Default semester
-                let branch = "<?= $student_branch; ?>"; // Default branch
+            const ratings = {};
 
-                if (selectedSubject) {
-                    $.ajax({
-                        url: 'fetch_professors.php',
-                        type: 'GET',
-                        data: {
-                            subject_id: selectedSubject,
-                            semester: semester,
-                            branch: branch
-                        },
-                        success: function (data) {
-                            $('#professor').html(data);
-                        }
+            // ⭐ Handle star click
+            $('.star-rating .fa-star').on('click', function () {
+                const value = $(this).data('value');
+                const container = $(this).closest('.star-rating');
+                const questionId = container.data('question-id');
+                ratings[questionId] = value;
+
+                container.find('.fa-star').each(function (index) {
+                    $(this).toggleClass('checked', index < value);
+                });
+            });
+
+            // 📚 Fetch professors based on subject
+            $('#subject').change(function () {
+                const subject_id = $(this).val();
+                const semester = '<?= $student_semester ?>';
+                const branch = '<?= $student_branch ?>';
+
+                if (subject_id) {
+                    $.get('fetch_professors.php', { subject_id, semester, branch }, function (data) {
+                        $('#professor').html(data);
                     });
                 } else {
-                    $('#professor').html('<option value="">--Select Professor--</option>');
+                    $('#professor').html('<option value="">-- Select Professor --</option>');
                 }
             });
 
-
+            // 📩 Submit feedback
             $('#ratingForm').on('submit', function (e) {
                 e.preventDefault();
 
-                if (validateForm()) {
-                    Swal.fire({
-                        title: 'Submitting Feedback...',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
+                const subject = $('#subject').val();
+                const professor = $('#professor').val();
+                const totalQuestions = $('.star-rating').length;
+                const answeredCount = Object.keys(ratings).length;
 
-                    let ratings = {};
-                    $('#questions select').each(function () {
-                        let questionId = $(this).attr('id').split('_')[1]; // Extract question ID
-                        ratings[questionId] = $(this).val(); // Store rating
-                    });
-
-                    let feedbackData = {
-                        professor_id: $('#professor').val(),
-                        semester: $('#semester').val(),
-                        subject: $('#subject').val(),
-                        ratings: ratings
-                    };
-
-                    $.ajax({
-                        url: 'process_ratings.php',
-                        type: 'POST',
-                        contentType: 'application/json',  // Send JSON
-                        data: JSON.stringify(feedbackData),
-                        success: function (response) {
-                            const res = JSON.parse(response);
-
-                            if (res.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Thank you!',
-                                    text: res.message
-                                });
-                                $('#ratingForm')[0].reset();
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: res.message || 'Failed to submit your rating. Please try again.'
-                                });
-                            }
-                        },
-                        error: function () {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'There was an error processing your request. Please try again.'
-                            });
-                        }
-                    });
-                }
-            });
-
-            function validateForm() {
-                const professor = document.getElementById('professor').value;
-                const subject = document.getElementById('subject').value;
-                const ratings = document.querySelectorAll('#questions select');
-
-                if (!professor || !subject || Array.from(ratings).some(select => !select.value)) {
+                if (!subject || !professor || answeredCount < totalQuestions) {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Empty Field!',
-                        text: 'Please, fill all fields!'
+                        title: 'Incomplete Feedback',
+                        text: 'Please select subject, professor, and rate all questions.'
                     });
-                    return false;
+                    return;
                 }
-                return true;
-            }
+
+                $.ajax({
+                    url: 'process_ratings.php',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    dataType: 'json', // ✅ Ensures jQuery auto-parses JSON
+                    data: JSON.stringify({
+                        professor_id: professor,
+                        semester: '<?= $student_semester ?>',
+                        subject: subject,
+                        ratings: ratings
+                    }),
+                    success: function (res) {
+                        Swal.fire({
+                            icon: res.success ? 'success' : 'error',
+                            title: res.success ? 'Thank you!' : 'Error',
+                            text: res.message || 'Something went wrong. Please try again.'
+                        });
+
+                        if (res.success) {
+                            $('#ratingForm')[0].reset();
+                            $('.fa-star').removeClass('checked');
+                            Object.keys(ratings).forEach(key => delete ratings[key]);
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Server error. Please try again later.', 'error');
+                    }
+                });
+            });
         });
     </script>
-    
+
+
 </body>
+
 </html>

@@ -1,5 +1,5 @@
 <?php
-require_once "../endpoint/config.php"; // Include database connection
+include 'admin_name.php'; // Include database connection
 
 $message = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {

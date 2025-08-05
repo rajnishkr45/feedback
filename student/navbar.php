@@ -16,7 +16,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </a>
         </li>
         <li class="<?php echo ($current_page == 'rating.php') ? 'active' : ''; ?>">
-            <a href="rating.php">
+            <a href="rating.php" target="_blank">
                 <i class='bx bxs-message-dots'></i>
                 <span class="text">Feedback</span>
             </a>
