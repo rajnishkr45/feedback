@@ -103,7 +103,7 @@ include './dependencies.php';
                             $feedCount = (int) $feedCount; // Ensure it's an integer
                             
                             if ($feedCount > 0) {
-                                echo $feedCount / 10; // Division if greater than 0
+                                echo $feedCount; // Division if greater than 0
                             } else {
                                 echo "N/A"; // Display "N/A" if $feedCount is 0
                             }
